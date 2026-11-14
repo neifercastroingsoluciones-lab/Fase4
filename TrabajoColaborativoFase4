@@ -4,3 +4,63 @@ CRISTIAN DAVID CHALA MURILLO
 JHON EMERSON GONZALEZ MARTINEZ
 EILEEN KATERINE VILLADIEGO ARGEL
 BRAYAN DAVID AYALA DE LA FUENTE
+
+Configuración inicial del programa.
+
+from abc import ABC, abstractmethod
+import logging
+
+# Configuracion del archivo de eventos y errores
+logging.basicConfig(
+    filename="logs.txt",
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s",
+    encoding="utf-8"
+)
+
+# Excepciones personalizadas
+class SistemaError(Exception):
+    pass
+
+class ValidacionError(SistemaError):
+    pass
+
+class ReservaError(SistemaError):
+    pass
+
+class ServicioNoDisponibleError(SistemaError):
+    pass
+
+# Clase abstracta para las entidades del sistema
+class Entidad(ABC):
+    @abstractmethod
+    def validar(self):
+        pass
+
+# Clase Cliente
+class Cliente(Entidad):
+    def __init__(self, nombre, documento, correo, telefono):
+        self.__nombre = nombre
+        self.__documento = documento
+        self.__correo = correo
+        self.__telefono = telefono
+        self.validar()
+
+    def validar(self):
+        if not isinstance(self.__nombre, str) or not self.__nombre.strip():
+            raise ValidacionError("El nombre del cliente no puede estar vacio.")
+        if not str(self.__documento).strip():
+            raise ValidacionError("El documento es obligatorio.")
+        if "@" not in self.__correo or "." not in self.__correo:
+            raise ValidacionError("El correo no tiene un formato valido.")
+        if not str(self.__telefono).isdigit() or len(str(self.__telefono)) < 7:
+            raise ValidacionError("El telefono debe tener minimo 7 digitos.")
+
+    def obtener_nombre(self):
+        return self.__nombre
+
+    def obtener_documento(self):
+        return self.__documento
+
+    def __str__(self):
+        return self.__nombre + " - Documento: " + str(self.__documento)
